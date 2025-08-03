@@ -1,0 +1,12 @@
+FROM ubuntu:22.04
+LABEL maintainer="meuemail@emailprovider.com"
+RUN apt-get update && apt-get upgrade -y && apt-get install -fy && apt-get install -y nginx curl && apt-get autoremove -y && apt-get autoclean && rm -rf /var/lib/apt/lists/*
+EXPOSE 80
+ADD https://github.com/prometheus/node_exporter/releases/download/v1.6.0/node_exporter-1.6.0.linux-amd64.tar.gz /root/node-exporter-baixado/node-exporter.tar.gz
+ADD node_exporter-1.6.0.linux-amd64.tar.gz /root/node-exporter-descompactado/
+COPY index.html /var/www/html/
+WORKDIR /var/www/html
+ENV APP_VERSION=1.0.0
+ENTRYPOINT ["nginx"]
+CMD ["-g", "daemon off;"]
+HEALTHCHECK --timeout=2s CMD curl -f localhost || exit 1
