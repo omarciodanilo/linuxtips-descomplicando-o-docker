@@ -1,25 +1,15 @@
 services:
   giropops-senhas:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    build: . 
     ports:
       - "5000:5000"
     networks:
       - giropops
     environment:
       REDIS_HOST: redis
-    env_file:
-      - .env
     volumes:
-      - type: volume
-        source: strigus
-        target: /strigus
+      - strigus:/strigus
     deploy:
-      replicas: 1
-      update_config:
-        parallelism: 1
-        delay: 10s
       resources:
         reservations:
           #cpus: "0.25"
@@ -27,20 +17,8 @@ services:
         limits:
           #cpus: "0.5"
           memory: "256M"
-      restart_policy:
-        condition: on-failure
-        delay: 5s
-        max_attempts: 3
     depends_on:
       - redis
-    labels:
-      com.docker.description: "Giropops Senhas App"
-      com.docker.version: "1.0"
-    dns:
-      - 8.8.8.8
-      - 8.8.4.4
-    devices:
-      - "/dev/sdb:/dev/sdb"
 
   redis:
     image: cgr.dev/chainguard/redis:latest
@@ -54,9 +32,6 @@ services:
       timeout: 5s
       retries: 3
       start_period: 10s
-    labels:
-      com.docker.description: "Redis Server"
-      com.docker.version: "Latest"
 
 networks:
   giropops:
